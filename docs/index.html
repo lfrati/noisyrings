@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Tiny SwissGL example</title>
+<title>Rings</title>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <script src="swissgl.js"></script>
@@ -15,7 +15,6 @@
     width: 100vw; /* Adjust the size as needed */
     height: 100vh; /* Adjust the size as needed */
   }
-
   canvas {
     position: absolute;
     top: 0;
@@ -25,10 +24,30 @@
   }
 </style>
 <body>
+  <audio id="audioElement" audioplay preload="auto">
+    <source src="Marconi Union - Weightless.mp4" type="audio/mp4" />
+    <source src="Marconi Union - Weightless.ogg" type="audio/ogg" />
+  </audio>
   <div class="canvas-container">
     <canvas id="canvas1"></canvas>
     <canvas id="canvas2"></canvas>
   </div>
+  <script>
+    document.addEventListener(
+      "click",
+      function () {
+        var audio = document.getElementById("audioElement");
+        if (audio.paused) {
+          audio.play().catch(function (error) {
+            console.error("Audio playback failed:", error);
+          });
+        } else {
+          audio.pause();
+        }
+      }
+      // { once: true }
+    );
+  </script>
   <script>
     "use strict";
     const canvas = document.getElementById("canvas1");
@@ -202,8 +221,8 @@
         Aspect: "fit",
         Grid: [NPOINTS, NRINGS],
         Blend: "d*(1-sa)+s*sa",
-        Clear: 1.0,
-        lineWidth: 0.002, // Width of the edges
+        Clear: 0.0,
+        lineWidth: 0.001, // Width of the edges
         radius,
         VP: `
             float rad = radius * pow(0.99, float(ID.y));
@@ -213,7 +232,7 @@
             vec2 perp = vec2(-n.y, n.x); // Perpendicular vector
             VPos = vec4(mix(p1, p2, UV.x) + perp * lineWidth * XY.y, 0.0, 1.0);
           `,
-        FP: `vec4(0.1, 0.5, 0.8, 0.4)`,
+        FP: `vec4(0.1, 0.5, 0.8, 0.5)`,
       });
 
       // glsl({
