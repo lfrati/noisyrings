@@ -6,21 +6,85 @@
 <style>
   body,
   html {
-    background-color: white;
     margin: 0;
     padding: 0;
     overflow: hidden;
   }
-  #c {
+  .canvas-container {
+    position: relative;
+    width: 100vw; /* Adjust the size as needed */
+    height: 100vh; /* Adjust the size as needed */
+  }
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
   }
 </style>
 <body>
-  <canvas id="c"></canvas>
+  <div class="canvas-container">
+    <canvas id="canvas1"></canvas>
+    <canvas id="canvas2"></canvas>
+  </div>
   <script>
     "use strict";
-    const canvas = document.getElementById("c");
+    const canvas = document.getElementById("canvas1");
+    const text_canvas = document.getElementById("canvas2");
+
+    let PIXEL_RATIO = (function (canvas) {
+      const ctx = canvas.getContext("2d");
+      let dpr = window.devicePixelRatio || 1,
+        bsr =
+          ctx.webkitBackingStorePixelRatio ||
+          ctx.mozBackingStorePixelRatio ||
+          ctx.msBackingStorePixelRatio ||
+          ctx.oBackingStorePixelRatio ||
+          ctx.backingStorePixelRatio ||
+          1;
+
+      return dpr / bsr;
+    })(text_canvas);
+
+    function resizeCanvas(canvas) {
+      let ratio = PIXEL_RATIO;
+      let w = window.innerWidth;
+      let h = window.innerHeight;
+      canvas.width = w * ratio;
+      canvas.height = h * ratio;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      const text = "Csenge + Lapo";
+      // Set font size relative to canvas width
+      const fontSizeRatio = 0.04;
+      const fontSize = Math.min(canvas.width, canvas.height) * fontSizeRatio;
+      ctx.font = `${fontSize}px Arial`;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      // TODO: why /4, because of ratio?
+      let x = canvas.width / (2 * ratio);
+      let y = canvas.height / (2 * ratio);
+      const metrics = ctx.measureText(text);
+      const startX = x - metrics.width / 2;
+      const startY = y - metrics.actualBoundingBoxAscent / 2;
+      const endX = x + metrics.width / 2;
+      const endY = y + metrics.actualBoundingBoxDescent / 2;
+      const grad = ctx.createLinearGradient(startX, startY, endX, endY);
+      grad.addColorStop(0, "lightblue");
+      grad.addColorStop(1, "darkblue");
+      ctx.fillStyle = grad;
+      ctx.fillText(text, x, y);
+    }
+
+    window.addEventListener("resize", () => resizeCanvas(text_canvas));
+
+    resizeCanvas(text_canvas);
+
     const glsl = SwissGL(canvas);
 
     const NPOINTS = 512;
