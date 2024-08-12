@@ -22,8 +22,33 @@
     width: 100vw;
     height: 100vh;
   }
+  @keyframes animateBorder {
+    25% {
+      border-radius: 30px 10px 10px 30px; /* Top-left and bottom-right corners exaggerated */
+    }
+    50% {
+      border-radius: 10px 30px 30px 10px; /* Top-right and bottom-left corners exaggerated */
+    }
+    75% {
+      border-radius: 30px 10px 10px 30px; /* Top-left and bottom-right corners exaggerated */
+    }
+  }
+  #message {
+    font-size: 1.5rem;
+    font-family: Arial, Helvetica, sans-serif;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px;
+    z-index: 1000;
+    border: 2px solid grey;
+    border-radius: 5px;
+    opacity: 0.3;
+    animation: animateBorder 4s infinite ease-in-out;
+  }
 </style>
 <body>
+  <div id="message">Click for sound</div>
   <audio id="audioElement" audioplay preload="auto">
     <source src="Marconi Union - Weightless.mp4" type="audio/mp4" />
     <source src="Marconi Union - Weightless.ogg" type="audio/ogg" />
@@ -33,6 +58,13 @@
     <canvas id="canvas2"></canvas>
   </div>
   <script>
+    document.addEventListener("click", function () {
+      const messageDiv = document.getElementById("message");
+      if (messageDiv) {
+        messageDiv.remove();
+      }
+    });
+
     document.addEventListener(
       "click",
       function () {
